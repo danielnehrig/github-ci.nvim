@@ -1,5 +1,12 @@
 local M = {}
 
+vim.api.nvim_exec(
+  [[
+  command! GithubCI lua require('githubci').ci()
+  ]],
+  false
+)
+
 M.defaults = {
   sucess = "✔️",
   failure = "❌",
@@ -11,12 +18,6 @@ M.config = {}
 
 function M.setup(opt)
   M.config = vim.tbl_deep_extend("force", {}, M.defaults, opt)
-  vim.api.nvim_exec(
-    [[
-  command! GithubCI lua require('githubci').ci()
-  ]],
-    false
-  )
 end
 
 function M.notify(msg, type)
