@@ -1,10 +1,25 @@
 local M = {}
 
+M.defaults = {
+  sucess = "✔️",
+  failure = "❌",
+  pending = "🟠",
+  view = "notify",
+}
+
+M.config = {}
+
 function M.setup(opt)
+  M.config = vim.tbl_deep_extend("force", {}, M.defaults, opt)
+  vim.api.nvim_exec(
+    [[
+  command! GithubCI lua require('githubci').ci()
+  ]],
+    false
+  )
 end
 
-function M.ci()
-  vim.cmd([[packadd nvim-notify]])
+function M.notify(msg, type)
   local notify = require("notify")
   notify.setup({
     -- Animation style (see below for details)
@@ -22,8 +37,18 @@ function M.ci()
       TRACE = "✎",
     },
   })
+
+  notify(msg, type, { title = "Github CI" })
+end
+
+function M.float(result)
+  -- TODO
+end
+
+function M.ci()
   local Job = require("plenary.job")
   local ci = { "LOADING" }
+
   Job
     :new({
       command = "hub",
@@ -32,20 +57,19 @@ function M.ci()
         local result = ""
         local count = 0
         ci = j:result()
-        local failed = false
 
         for _, msg in ipairs(ci) do
           local str = msg
           if msg == "success" then
-            str = "✔️"
+            str = M.config.success
           end
           if msg == "failure" then
-            failed = true
-            str = "❌"
+            str = M.config.failure
           end
           if msg == "pending" then
-            str = "🟠"
+            str = M.config.pending
           end
+
           if count >= 1 then
             result = result .. str .. "\n"
             count = 0
@@ -53,12 +77,12 @@ function M.ci()
             result = result .. str
             count = count + 1
           end
-        end
 
-        if failed then
-          notify(result, "error", { title = "Github CI" })
-        else
-          notify(result, "success", { title = "Github CI" })
+          if M.config.view == "notify" then
+            M.notify(result, "success")
+          elseif "float" then
+            M.float(result)
+          end
         end
       end,
     })
