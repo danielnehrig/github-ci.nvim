@@ -1,14 +1,7 @@
 local M = {}
 
-vim.api.nvim_exec(
-  [[
-  command! GithubCI lua require('githubci').ci()
-  ]],
-  false
-)
-
 M.defaults = {
-  sucess = "✔️",
+  success = "✔️",
   failure = "❌",
   pending = "🟠",
   view = "notify",
@@ -17,27 +10,17 @@ M.defaults = {
 M.config = {}
 
 function M.setup(opt)
-  M.config = vim.tbl_deep_extend("force", {}, M.defaults, opt)
+  M.config = vim.tbl_deep_extend("force", {}, M.defaults, opt or {})
+  vim.api.nvim_exec(
+    [[
+  command! GithubCI lua require('githubci').ci()
+  ]],
+    false
+  )
 end
 
 function M.notify(msg, type)
   local notify = require("notify")
-  notify.setup({
-    -- Animation style (see below for details)
-    -- stages = "fade",
-    -- Default timeout for notifications
-    timeout = 3000,
-    -- For stages that change opacity this is treated as the highlight behind the window
-    background_colour = "NotifyBG",
-    -- Icons for the different levels
-    icons = {
-      ERROR = "",
-      WARN = "",
-      INFO = "",
-      DEBUG = "",
-      TRACE = "✎",
-    },
-  })
 
   notify(msg, type, { title = "Github CI" })
 end
@@ -78,12 +61,12 @@ function M.ci()
             result = result .. str
             count = count + 1
           end
+        end
 
-          if M.config.view == "notify" then
-            M.notify(result, "success")
-          elseif "float" then
-            M.float(result)
-          end
+        if M.config.view == "notify" then
+          M.notify(result, "success")
+        elseif "float" then
+          M.float(result)
         end
       end,
     })
