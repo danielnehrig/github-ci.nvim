@@ -17,11 +17,30 @@ function M.setup(opt)
   ]],
     false
   )
+
+  if M.config.view == "notify" then
+    local notify = require("notify")
+    notify.setup({
+      -- Animation style (see below for details)
+      -- stages = "fade",
+      -- Default timeout for notifications
+      timeout = 3000,
+      -- For stages that change opacity this is treated as the highlight behind the window
+      background_colour = "NotifyBG",
+      -- Icons for the different levels
+      icons = {
+        ERROR = "",
+        WARN = "",
+        INFO = "",
+        DEBUG = "",
+        TRACE = "✎",
+      },
+    })
+  end
 end
 
 function M.notify(msg, type)
   local notify = require("notify")
-
   notify(msg, type, { title = "Github CI" })
 end
 

@@ -1,5 +1,7 @@
 # Github-CI.nvim
 
+## THIS IS WIP NOT WORKING YET FULLY
+
 ## Requirements
 
 - Hub (cli tool hub)
