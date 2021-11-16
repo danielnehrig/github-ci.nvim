@@ -15,15 +15,11 @@
 ```lua
 use({
   "danielnehrig/github-ci.nvim",
-  requires = {"rcarriga/nvim-notify", "nvim-lua/plenary.nvim"},
-  cmd = "GithubCI",
+  requires = { "nvim-lua/plenary.nvim", "rcarriga/nvim-notify" },
+  cmd = { "GithubCI" },
   config = function()
-    require('githubci').setup({
-      -- sucess = "sucess",
-      -- failure =  "failure",
-      -- pending = "pending",
-      view = "notify",
-    })
-  end
+    vim.cmd([[packadd nvim-notify]]) -- notify is a optional dependency
+    require("githubci").setup()
+  end,
 })
 ```
